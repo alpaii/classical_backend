@@ -8,5 +8,4 @@ router = DefaultRouter()
 router.register(r"composers", ComposerViewSet, basename="composer")
 router.register(r"performers", PerformerViewSet, basename="performer")
 
-
 urlpatterns = router.urls

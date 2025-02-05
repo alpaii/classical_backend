@@ -14,3 +14,4 @@ class ComposerViewSet(ModelViewSet):
 class PerformerViewSet(ModelViewSet):
     queryset = Performer.objects.all()
     serializer_class = PerformerSerializer
+    pagination_class = None  # ❌ 이 ViewSet에서는 페이지네이션을 사용하지 않음
