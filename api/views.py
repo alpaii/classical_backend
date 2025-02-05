@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import Composer
+from .serializers import (
+    ComposerSerializer,
+)
 
-# Create your views here.
+
+class ComposerViewSet(ModelViewSet):
+    queryset = Composer.objects.all()
+    serializer_class = ComposerSerializer

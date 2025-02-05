@@ -1,3 +1,9 @@
 from django.db import models
 
-# Create your models here.
+
+class Composer(models.Model):
+    name = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
