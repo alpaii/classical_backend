@@ -29,3 +29,19 @@ class Composer(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Work(models.Model):
+    composer = models.ForeignKey(Composer, on_delete=models.CASCADE)
+    work_no = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["composer", "work_no"], name="unique_composer_work_no"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.composer.name} ({self.work_no}) {self.name}"

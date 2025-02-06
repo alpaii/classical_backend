@@ -1,17 +1,23 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Composer, Performer
+from .models import Composer, Performer, Work
 from .serializers import (
     ComposerSerializer,
     PerformerSerializer,
+    WorkSerializer,
 )
 
 
 class ComposerViewSet(ModelViewSet):
     queryset = Composer.objects.all()
     serializer_class = ComposerSerializer
+    pagination_class = None
 
 
 class PerformerViewSet(ModelViewSet):
     queryset = Performer.objects.all()
     serializer_class = PerformerSerializer
-    pagination_class = None  # ❌ 이 ViewSet에서는 페이지네이션을 사용하지 않음
+
+
+class WorkViewSet(ModelViewSet):
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializer
