@@ -1,26 +1,28 @@
 import pytest
-import pdb  # ✅ 디버거 추가
-from rest_framework.test import APIClient
-from django.urls import reverse
 from ..models import Composer
+from .utils import create_api_test, list_api_test  # ✅ 유틸리티 함수 임포트
 
 
 @pytest.mark.django_db
 class TestComposerAPI:
     def setup_method(self):
-        self.client = APIClient()
-        self.composer_data = {"name": "Beethoven", "full_name": "Ludwig van Beethoven"}
+        self.data = {
+            "normal": {
+                "name": "Beethoven",
+                "full_name": "Ludwig van Beethoven",
+            },  # 정상 데이터
+            "unique": {
+                "name": "Beethoven",
+                "full_name": "Another van Beethoven",
+            },  # name 필드는 중복 불가
+            "duplicate": {
+                "name": "Ceethoven",
+                "full_name": "Ludwig van Beethoven",
+            },  # full_name 필드는 중복 가능
+        }
 
     def test_create_composer(self):
-        url = reverse("composer-list")  # DRF ViewSet 엔드포인트
-        response = self.client.post(url, self.composer_data, format="json")
-        assert response.status_code == 201
-        assert Composer.objects.count() == 1
-        assert Composer.objects.first().name == "Beethoven"
+        create_api_test(Composer, "composer-list", self.data)
 
     def test_get_composers(self):
-        Composer.objects.create(**self.composer_data)
-        url = reverse("composer-list")
-        response = self.client.get(url)
-        assert response.status_code == 200
-        assert len(response.data) == 1
+        list_api_test(Composer, "composer-list", self.data["normal"])
