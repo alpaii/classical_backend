@@ -4,6 +4,7 @@ from .serializers import (
     ComposerSerializer,
     PerformerSerializer,
     WorkSerializer,
+    WorkDetailSerializer,
 )
 
 
@@ -21,3 +22,8 @@ class PerformerViewSet(ModelViewSet):
 class WorkViewSet(ModelViewSet):
     queryset = Work.objects.all()
     serializer_class = WorkSerializer
+
+
+class WorkDetailViewSet(ModelViewSet):
+    queryset = Work.objects.all()
+    serializer_class = WorkDetailSerializer

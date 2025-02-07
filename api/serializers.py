@@ -18,3 +18,10 @@ class WorkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Work
         fields = "__all__"
+
+
+class WorkDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Work
+        fields = "__all__"
+        depth = 1

@@ -3,11 +3,13 @@ from .views import (
     ComposerViewSet,
     PerformerViewSet,
     WorkViewSet,
+    WorkDetailViewSet,
 )
 
 router = DefaultRouter()
 router.register(r"composers", ComposerViewSet, basename="composer")
 router.register(r"performers", PerformerViewSet, basename="performer")
 router.register(r"works", WorkViewSet, basename="work")
+router.register(r"work-details", WorkDetailViewSet, basename="work-detail")
 
 urlpatterns = router.urls
