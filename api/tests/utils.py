@@ -7,6 +7,8 @@ from django.urls import reverse
 
 def create_api_test(model, url_name, data):
     """POST 요청을 보내어 객체를 생성하는 API 테스트 함수"""
+    # pdb.set_trace()  # ✅ 여기서 디버깅 시작
+
     url = reverse(url_name)
     response = APIClient().post(url, data["normal"], format="json")
     assert response.status_code == 201
@@ -21,10 +23,13 @@ def create_api_test(model, url_name, data):
     assert response.status_code == 201
 
 
-def list_api_test(model, url_name, data):
+def list_api_test(model, url_name, data, use_page):
     """GET 요청을 보내어 목록 API 테스트 함수"""
     model.objects.create(**data)
     url = reverse(url_name)
     response = APIClient().get(url)
     assert response.status_code == 200
-    assert len(response.data) == 1
+    if use_page:
+        assert len(response.data["results"]) == 1
+    else:
+        assert len(response.data) == 1

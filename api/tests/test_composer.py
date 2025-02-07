@@ -25,4 +25,4 @@ class TestComposerAPI:
         create_api_test(Composer, "composer-list", self.data)
 
     def test_get_composers(self):
-        list_api_test(Composer, "composer-list", self.data["normal"])
+        list_api_test(Composer, "composer-list", self.data["normal"], use_page=False)
