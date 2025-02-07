@@ -12,6 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         composers = list(Composer.objects.all())
         works = []
+        existing_pairs = set()
         created_count = 0
         target_count = 1000  # 목표 개수
 
@@ -20,8 +21,9 @@ class Command(BaseCommand):
             num = random.randint(1, 199)
             work_no = f"Op. {'_' * (3 - len(str(num)))}{num}"  # 빈 자리 `_`로 채움
 
-            # 중복 검사: 같은 composer + work_no 조합이 존재하는지 확인
-            if not Work.objects.filter(composer=composer, work_no=work_no).exists():
+            # ✅ Python `set`을 사용하여 중복 체크 (DB 조회 최소화)
+            if (composer.id, work_no) not in existing_pairs:
+                existing_pairs.add((composer.id, work_no))  # ✅ 중복 방지
                 work = Work(
                     composer=composer, work_no=work_no, name=fake.sentence(nb_words=3)
                 )

@@ -15,7 +15,7 @@ class Performer(models.Model):
         ("Flute", "Flute"),
     ]
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
     role = models.CharField(max_length=255, choices=ROLE_CHOICES)
 
@@ -27,7 +27,7 @@ class Performer(models.Model):
 
 
 class Composer(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
 
     class Meta:

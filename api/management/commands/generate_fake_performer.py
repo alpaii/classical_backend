@@ -24,10 +24,20 @@ class Command(BaseCommand):
         ]
 
         performers = []
-        for _ in range(1000):  # 1000개의 데이터 생성
+        performer_names = set()
+
+        while len(performers) < 1000:
+            last_name = fake.last_name()
+            if last_name in performer_names:
+                continue
+
+            first_name = fake.first_name()
+            full_name = f"{first_name} {last_name}"
+            performer_names.add(last_name)
+
             performer = Performer(
-                name=fake.last_name(),
-                full_name=fake.name(),
+                name=last_name,
+                full_name=full_name,
                 role=random.choice(ROLE_CHOICES),
             )
             performers.append(performer)
