@@ -57,7 +57,7 @@ class TestWorkAPI:
                 "composer": self.works["Mozart Symphony No. 34"]["composer"].id,
                 "work_no": self.works["Beethoven Symphony No. 9"]["work_no"],
                 "name": self.works["Beethoven Symphony No. 9"]["name"],
-            },  # composer가 다르면 work_no 필드는 중복 불가
+            },  # composer가 다르면 work_no 필드는 중복 가능
         }
         url = reverse("work-list")
         response = api_client.post(url, test_data["normal"], format="json")
