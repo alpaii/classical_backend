@@ -5,7 +5,7 @@ from ..models import Composer, Work
 
 
 @pytest.mark.django_db
-class TestPerformerAPI:
+class TestWorkAPI:
     def setup_method(self):
         # pdb.set_trace()
         self.composers = {
