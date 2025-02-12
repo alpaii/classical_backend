@@ -1,54 +1,117 @@
-import pytest
-import pdb  # ✅ 디버거 추가
+# tests/test_performer.py
+import pytest, pdb
+from django.urls import reverse
 from ..models import Composer, Work
-from .utils import create_api_test, list_api_test
-
-
-@pytest.fixture
-def test_data():
-    composer_a = Composer.objects.create(
-        name="Mozart", full_name="Wolfgang Amadeus Mozart"
-    )
-    composer_b = Composer.objects.create(
-        name="Beethoven", full_name="Ludwig van Beethoven"
-    )
-
-    name_a = "Eine kleine Nachtmusik"
-    name_b = "Symphony No.40"
-
-    return {
-        "normal": {
-            "composer": composer_a.id,
-            "work_no": "K.525",
-            "name": name_a,
-        },  # 정상 데이터
-        "unique": {
-            "composer": composer_a.id,
-            "work_no": "K.525",
-            "name": name_b,
-        },  # composer & work_no 필드는 중복 불가
-        "duplicate": {
-            "composer": composer_b.id,
-            "work_no": "K.525",
-            "name": name_a,
-        },  # composer가 다르면 work_no 필드는 중복 가능
-        "expected": {
-            "use_page": True,
-            "cnt": 1,
-            "field": "name",
-            "value": name_a,
-        },
-    }
 
 
 @pytest.mark.django_db
-class TestWorkAPI:
-    def test_create_work(self, api_client, test_data):
-        create_api_test(api_client, Work, "work-list", test_data)
+class TestPerformerAPI:
+    def setup_method(self):
+        # pdb.set_trace()
+        self.composers = {
+            "Mozart": {
+                "name": "Mozart",
+                "full_name": "Wolfgang Amadeus Mozart",
+            },
+            "Beethoven": {
+                "name": "Beethoven",
+                "full_name": "Ludwig van Beethoven",
+            },
+        }
+        self.composer_models = {
+            "Mozart": Composer.objects.create(**self.composers["Mozart"]),
+            "Beethoven": Composer.objects.create(**self.composers["Beethoven"]),
+        }
 
-    def test_get_works(self, api_client, test_data):
-        test_data["normal"]["composer"] = Composer.objects.get(
-            id=test_data["normal"]["composer"]
+        self.works = {
+            "Beethoven Symphony No. 9": {
+                "composer": self.composer_models["Beethoven"],
+                "work_no": "Op. 125",
+                "name": "Symphony No. 9 in D minor",
+            },
+            "Beethoven Symphony No. 7": {
+                "composer": self.composer_models["Beethoven"],
+                "work_no": "Op. _92",
+                "name": "Symphony No. 7 in A major",
+            },
+            "Mozart Symphony No. 34": {
+                "composer": self.composer_models["Mozart"],
+                "work_no": "K. 338",
+                "name": "Symphony No. 34 in C major",
+            },
+        }
+
+    def test_post(self, api_client):
+        test_data = {
+            "normal": {
+                "composer": self.works["Beethoven Symphony No. 9"]["composer"].id,
+                "work_no": self.works["Beethoven Symphony No. 9"]["work_no"],
+                "name": self.works["Beethoven Symphony No. 9"]["name"],
+            },  # 정상 데이터
+            "unique": {
+                "composer": self.works["Beethoven Symphony No. 9"]["composer"].id,
+                "work_no": self.works["Beethoven Symphony No. 9"]["work_no"],
+                "name": self.works["Mozart Symphony No. 34"]["name"],
+            },  # composer & work_no 필드는 중복 불가
+            "duplicate": {
+                "composer": self.works["Mozart Symphony No. 34"]["composer"].id,
+                "work_no": self.works["Beethoven Symphony No. 9"]["work_no"],
+                "name": self.works["Beethoven Symphony No. 9"]["name"],
+            },  # composer가 다르면 work_no 필드는 중복 불가
+        }
+        url = reverse("work-list")
+        response = api_client.post(url, test_data["normal"], format="json")
+        assert response.status_code == 201
+        assert Work.objects.count() == 1
+
+        response = api_client.post(url, test_data["unique"], format="json")
+        assert response.status_code == 400
+        assert Work.objects.count() == 1
+
+        response = api_client.post(url, test_data["duplicate"], format="json")
+        assert response.status_code == 201
+        assert Work.objects.count() == 2
+
+    def test_get(self, api_client):
+        Work.objects.create(**self.works["Beethoven Symphony No. 9"])
+        url = reverse("work-list")
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert len(response.data["results"]) == 1
+        assert (
+            response.data["results"][0]["name"]
+            == self.works["Beethoven Symphony No. 9"]["name"]
         )
-        Work.objects.create(**test_data["normal"])
-        list_api_test(api_client, "work-list", test_data["expected"])
+
+        # sort test
+        Work.objects.create(**self.works["Mozart Symphony No. 34"])
+        Work.objects.create(**self.works["Beethoven Symphony No. 7"])
+        response = api_client.get(url)
+        list = [item["name"] for item in response.data["results"]]
+        assert list == [
+            "Symphony No. 7 in A major",
+            "Symphony No. 9 in D minor",
+            "Symphony No. 34 in C major",
+        ]
+
+    def test_put(self, api_client):
+        work = Work.objects.create(**self.works["Beethoven Symphony No. 9"])
+        url = reverse("work-detail", args=[work.id])
+        update_data = {
+            "composer": self.works["Beethoven Symphony No. 9"]["composer"].id,
+            "work_no": self.works["Beethoven Symphony No. 9"]["work_no"],
+            "name": "Symphony No. 9",
+        }
+
+        response = api_client.put(url, update_data, format="json")
+        assert response.status_code == 200
+        work.refresh_from_db()
+        assert work.name == "Symphony No. 9"
+
+    def test_delete(self, api_client):
+        work = Work.objects.create(**self.works["Beethoven Symphony No. 9"])
+        url = reverse("work-detail", args=[work.id])
+
+        response = api_client.delete(url)
+        assert response.status_code == 204
+        assert Work.objects.count() == 0
