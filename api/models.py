@@ -52,4 +52,17 @@ class Work(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.composer.name} ({self.work_no}) {self.name}"
+        return self.name
+
+
+class Recording(models.Model):
+    work = models.ForeignKey(Work, on_delete=models.CASCADE)
+    performers = models.ManyToManyField(Performer)
+    year = models.PositiveIntegerField()
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        ordering = ["year", "work"]
+
+    def __str__(self):
+        return self.name
