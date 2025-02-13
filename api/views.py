@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import Composer, Performer, Work, Recording
+from .models import Composer, Performer, Work, Recording, Cover, Album
 from .serializers import (
     ComposerSerializer,
     PerformerSerializer,
@@ -7,6 +7,9 @@ from .serializers import (
     WorkDetailSerializer,
     RecordingSerializer,
     RecordingDetailSerializer,
+    CoverSerializer,
+    AlbumSerializer,
+    AlbumDetailSerializer,
 )
 
 
@@ -39,3 +42,18 @@ class RecordingViewSet(ModelViewSet):
 class RecordingDetailViewSet(ModelViewSet):
     queryset = Recording.objects.all()
     serializer_class = RecordingDetailSerializer
+
+
+class CoverViewSet(ModelViewSet):
+    queryset = Cover.objects.all()
+    serializer_class = CoverSerializer
+
+
+class AlbumViewSet(ModelViewSet):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+
+
+class AlbumDetailViewSet(ModelViewSet):
+    queryset = Album.objects.all()
+    serializer_class = AlbumDetailSerializer

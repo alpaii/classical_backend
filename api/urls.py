@@ -6,6 +6,9 @@ from .views import (
     WorkDetailViewSet,
     RecordingViewSet,
     RecordingDetailViewSet,
+    CoverViewSet,
+    AlbumViewSet,
+    AlbumDetailViewSet,
 )
 
 router = DefaultRouter()
@@ -17,5 +20,8 @@ router.register(r"recordings", RecordingViewSet, basename="recording")
 router.register(
     r"recording-details", RecordingDetailViewSet, basename="recording-detail"
 )
+router.register(r"covers", CoverViewSet, basename="cover")
+router.register(r"albums", AlbumViewSet, basename="album")
+router.register(r"album-details", AlbumDetailViewSet, basename="album-detail")
 
 urlpatterns = router.urls

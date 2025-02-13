@@ -66,3 +66,22 @@ class Recording(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Cover(models.Model):
+    image_url = models.URLField()
+
+    def __str__(self):
+        return self.image_url
+
+
+class Album(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    covers = models.ManyToManyField(Cover, blank=True)
+    recordings = models.ManyToManyField(Recording, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name

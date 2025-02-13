@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Composer, Performer, Work, Recording
+from .models import Composer, Performer, Work, Recording, Cover, Album
 
 
 class ComposerSerializer(serializers.ModelSerializer):
@@ -38,3 +38,22 @@ class RecordingDetailSerializer(serializers.ModelSerializer):
         model = Recording
         fields = "__all__"
         depth = 2
+
+
+class CoverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cover
+        fields = "__all__"
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = "__all__"
+
+
+class AlbumDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = "__all__"
+        depth = 3
