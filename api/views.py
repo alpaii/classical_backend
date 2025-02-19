@@ -39,9 +39,12 @@ class PerformerViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.query_params.get("search", None)
+        role_query = self.request.query_params.get("role", None)
 
         if search_query:
             queryset = queryset.filter(full_name__icontains=search_query)
+        if role_query:
+            queryset = queryset.filter(role=role_query)
 
         return queryset
 
