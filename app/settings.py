@@ -152,5 +152,5 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",  # 기본 페이지네이션 적용
-    "PAGE_SIZE": 100,  # 한 페이지당 10개 항목 반환
+    "PAGE_SIZE": 20,  # 한 페이지당 10개 항목 반환
 }

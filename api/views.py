@@ -20,7 +20,6 @@ from .serializers import (
 class ComposerViewSet(ModelViewSet):
     queryset = Composer.objects.all()
     serializer_class = ComposerSerializer
-    pagination_class = None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -30,6 +29,18 @@ class ComposerViewSet(ModelViewSet):
             queryset = queryset.filter(full_name__icontains=search_query)
 
         return queryset
+
+    # ✅ Bulk Insert 지원 추가
+    def create(self, request, *args, **kwargs):
+        if isinstance(request.data, list):  # 요청이 리스트인지 확인
+            serializer = self.get_serializer(data=request.data, many=True)
+        else:
+            serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class PerformerViewSet(ModelViewSet):
