@@ -70,9 +70,13 @@ class WorkViewSet(ModelViewSet):
         if composer_id:
             queryset = queryset.filter(composer_id=composer_id)
 
-        search_query = self.request.query_params.get("search")
-        if search_query:
-            queryset = queryset.filter(name__icontains=search_query)
+        search_work_no = self.request.query_params.get("search_work_no")
+        if search_work_no:
+            queryset = queryset.filter(work_no__icontains=search_work_no)
+
+        search_name = self.request.query_params.get("search_name")
+        if search_name:
+            queryset = queryset.filter(name__icontains=search_name)
 
         return queryset
 
