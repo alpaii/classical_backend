@@ -29,7 +29,7 @@ class ComposerViewSet(ModelViewSet):
         if search_query:
             queryset = queryset.filter(full_name__icontains=search_query)
 
-        return queryset
+        return queryset.order_by("name")  # ✅ 정렬 추가
 
     # ✅ Bulk Insert 지원 추가
     def create(self, request, *args, **kwargs):
