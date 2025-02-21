@@ -2,7 +2,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q
+from django.db.models import Q, Count
+
 from .models import Composer, Performer, Work, Recording, Cover, Album
 from .serializers import (
     ComposerSerializer,
@@ -18,7 +19,7 @@ from .serializers import (
 
 
 class ComposerViewSet(ModelViewSet):
-    queryset = Composer.objects.all()
+    queryset = Composer.objects.annotate(work_count=Count("work"))  # ✅ work 개수 추가
     serializer_class = ComposerSerializer
 
     def get_queryset(self):

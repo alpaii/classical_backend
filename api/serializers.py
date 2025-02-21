@@ -3,9 +3,11 @@ from .models import Composer, Performer, Work, Recording, Cover, Album
 
 
 class ComposerSerializer(serializers.ModelSerializer):
+    work_count = serializers.IntegerField(read_only=True)  # ✅ 추가 필드
+
     class Meta:
         model = Composer
-        fields = "__all__"
+        fields = ["id", "name", "full_name", "work_count"]  # ✅ work_count 포함
 
 
 class PerformerSerializer(serializers.ModelSerializer):
