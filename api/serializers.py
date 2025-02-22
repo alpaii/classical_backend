@@ -17,9 +17,17 @@ class PerformerSerializer(serializers.ModelSerializer):
 
 
 class WorkSerializer(serializers.ModelSerializer):
+    recording_count = serializers.IntegerField(read_only=True)  # ✅ 추가 필드
+
     class Meta:
         model = Work
-        fields = "__all__"
+        fields = [
+            "id",
+            "composer",
+            "work_no",
+            "name",
+            "recording_count",
+        ]  # ✅ recording_count 포함
 
 
 class WorkDetailSerializer(serializers.ModelSerializer):

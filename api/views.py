@@ -62,7 +62,9 @@ class PerformerViewSet(ModelViewSet):
 
 
 class WorkViewSet(ModelViewSet):
-    queryset = Work.objects.all()
+    queryset = Work.objects.all().annotate(
+        recording_count=Count("recording")
+    )  # ✅ recording 개수 추가
     serializer_class = WorkSerializer
 
     def filter_queryset(self, queryset):
@@ -78,7 +80,7 @@ class WorkViewSet(ModelViewSet):
         if search_name:
             queryset = queryset.filter(name__icontains=search_name)
 
-        return queryset
+        return queryset.order_by("composer", "work_no")
 
     @action(detail=False, methods=["post"])
     def bulk_create(self, request):
