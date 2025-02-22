@@ -45,7 +45,9 @@ class ComposerViewSet(ModelViewSet):
 
 
 class PerformerViewSet(ModelViewSet):
-    queryset = Performer.objects.all()
+    queryset = Performer.objects.annotate(
+        recording_count=Count("recording")
+    )  # ✅ recording 개수 추가
     serializer_class = PerformerSerializer
 
     def get_queryset(self):
@@ -62,7 +64,7 @@ class PerformerViewSet(ModelViewSet):
 
 
 class WorkViewSet(ModelViewSet):
-    queryset = Work.objects.all().annotate(
+    queryset = Work.objects.annotate(
         recording_count=Count("recording")
     )  # ✅ recording 개수 추가
     serializer_class = WorkSerializer
