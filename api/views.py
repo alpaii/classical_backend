@@ -24,10 +24,10 @@ class ComposerViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_query = self.request.query_params.get("search", None)
+        search_full_name = self.request.query_params.get("searchFullName", None)
 
-        if search_query:
-            queryset = queryset.filter(full_name__icontains=search_query)
+        if search_full_name:
+            queryset = queryset.filter(full_name__icontains=search_full_name)
 
         return queryset.order_by("name")  # ✅ 정렬 추가
 
@@ -74,11 +74,11 @@ class WorkViewSet(ModelViewSet):
         if composer_id:
             queryset = queryset.filter(composer_id=composer_id)
 
-        search_work_no = self.request.query_params.get("search_work_no")
+        search_work_no = self.request.query_params.get("searchWorkNo")
         if search_work_no:
             queryset = queryset.filter(work_no__icontains=search_work_no)
 
-        search_name = self.request.query_params.get("search_name")
+        search_name = self.request.query_params.get("searchName")
         if search_name:
             queryset = queryset.filter(name__icontains=search_name)
 
