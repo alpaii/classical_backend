@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q, Count
+from .mixins import BaseFilterMixin
 
 from .models import Composer, Performer, Work, Recording, Cover, Album
 from .serializers import (
@@ -24,10 +25,9 @@ class ComposerViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_full_name = self.request.query_params.get("searchFullName", None)
-
-        if search_full_name:
-            queryset = queryset.filter(full_name__icontains=search_full_name)
+        full_name = self.request.query_params.get("full_name", None)
+        if full_name:
+            queryset = queryset.filter(full_name__icontains=full_name)
 
         return queryset.order_by("name")  # ✅ 정렬 추가
 
@@ -69,19 +69,14 @@ class WorkViewSet(ModelViewSet):
     )  # ✅ recording 개수 추가
     serializer_class = WorkSerializer
 
+    filter_fields = {
+        "composer_id": "composer_id",
+        "work_no": "work_no__icontains",
+        "name": "name__icontains",
+    }
+
     def filter_queryset(self, queryset):
-        composer_id = self.request.query_params.get("composer")
-        if composer_id:
-            queryset = queryset.filter(composer_id=composer_id)
-
-        search_work_no = self.request.query_params.get("searchWorkNo")
-        if search_work_no:
-            queryset = queryset.filter(work_no__icontains=search_work_no)
-
-        search_name = self.request.query_params.get("searchName")
-        if search_name:
-            queryset = queryset.filter(name__icontains=search_name)
-
+        queryset = self.apply_filters(queryset)
         return queryset.order_by("composer", "work_no")
 
     @action(detail=False, methods=["post"])
