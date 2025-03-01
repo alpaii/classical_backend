@@ -19,16 +19,16 @@ from .serializers import (
 )
 
 
-class ComposerViewSet(ModelViewSet):
+class ComposerViewSet(BaseFilterMixin, ModelViewSet):
     queryset = Composer.objects.annotate(work_count=Count("work"))  # ✅ work 개수 추가
     serializer_class = ComposerSerializer
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        full_name = self.request.query_params.get("full_name", None)
-        if full_name:
-            queryset = queryset.filter(full_name__icontains=full_name)
+    filter_fields = {
+        "full_name": "full_name__icontains",
+    }
 
+    def filter_queryset(self, queryset):
+        queryset = self.apply_filters(queryset)
         return queryset.order_by("name")  # ✅ 정렬 추가
 
     # ✅ Bulk Insert 지원 추가
@@ -44,26 +44,23 @@ class ComposerViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class PerformerViewSet(ModelViewSet):
+class PerformerViewSet(BaseFilterMixin, ModelViewSet):
     queryset = Performer.objects.annotate(
         recording_count=Count("recording")
     )  # ✅ recording 개수 추가
     serializer_class = PerformerSerializer
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query = self.request.query_params.get("search", None)
-        role_query = self.request.query_params.get("role", None)
+    filter_fields = {
+        "full_name": "full_name__icontains",
+        "role": "role",
+    }
 
-        if search_query:
-            queryset = queryset.filter(full_name__icontains=search_query)
-        if role_query:
-            queryset = queryset.filter(role=role_query)
-
-        return queryset
+    def filter_queryset(self, queryset):
+        queryset = self.apply_filters(queryset)
+        return queryset.order_by("name")  # ✅ 정렬 추가
 
 
-class WorkViewSet(ModelViewSet):
+class WorkViewSet(BaseFilterMixin, ModelViewSet):
     queryset = Work.objects.annotate(
         recording_count=Count("recording")
     )  # ✅ recording 개수 추가
